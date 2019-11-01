@@ -1,0 +1,27 @@
+<div class="sidebar-container">
+  <div class="sidebar-logo">
+    Social Network Analyser
+  </div>
+  <div class="row">
+    <div class="col-md-3">
+      <ul class="sidebar-navigation">
+        <li class="header">Datasets</li>
+        <li *ngFor="let dataset of datasets">
+          <a (click)="onSelect(dataset)">
+            {{dataset.name}}
+          </a>
+        </li>
+        <li class="header">
+          <input type="button" class="btn btn-success" (click)="createDataset()" value="New Dataset">
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="content-container">
+  <div class="container-fluid">
+    <app-item-dataset [dataset]="selectedDataset"></app-item-dataset>
+    <app-dataset-input *ngIf="newDataset" (onDatasetCreationSucceed)="reloadSidebar()"></app-dataset-input>
+  </div>
+</div>

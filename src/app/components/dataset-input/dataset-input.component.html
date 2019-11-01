@@ -1,0 +1,19 @@
+<div class="card">
+    <div class="card-body">
+      <h5 class="card-title">New Dataset</h5>
+
+      <form novalidate (ngSubmit)="saveDataset()" [formGroup]="datasetForm">
+          <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" class="form-control" id="name" formControlName="name" placeholder="Facebook">
+              <div *ngIf="datasetForm.get('name').errors?.required && datasetForm.get('name').touched">
+                  <br>
+                  <span class="alert alert-danger">
+                      Name is required
+                  </span>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" [disabled]="!datasetForm.get('name').valid">Save</button>
+      </form>
+    </div>
+  </div>
