@@ -42,7 +42,9 @@ export class HomeComponent implements OnInit {
     this.newDataset = false;
   }
 
-  deleteDatasetFromSidebar() {
+  deleteDatasetFromSidebar($id) {
     this.selectedDataset = null;
+    const idx = this.datasets.findIndex(x => x.id == $id)
+    this.datasets.splice(idx, 1);
   }
 }

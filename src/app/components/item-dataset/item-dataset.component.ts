@@ -16,6 +16,7 @@ export class ItemDatasetComponent implements OnChanges {
   @Output() onDatasetDeletionSucceed: EventEmitter<number>;
   users: User[];
   usersCount: number = 0;
+  isDeleted: boolean = false;
 
   fileData: File = null;
   previewUrl: any = null;
@@ -24,7 +25,9 @@ export class ItemDatasetComponent implements OnChanges {
   uploadResponse = { status: '', message: '' };
 
 
-  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef, private homeService: HomeService) { }
+  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef, private homeService: HomeService) {
+    this.onDatasetDeletionSucceed = new EventEmitter<number>();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.dataset.currentValue && changes.dataset.previousValue) {
@@ -71,11 +74,13 @@ export class ItemDatasetComponent implements OnChanges {
       })
   }
 
-  deleteDataset(){
-    // this.homeService.deleteDatasetById(this.dataset.id).subscribe((res) => {
-    //   this.onDatasetDeletionSucceed.emit(null);
-    //   this.dataset = null;
-    // });
+  deleteDataset() {
+    this.isDeleted = true;
+    this.homeService.deleteDatasetById(this.dataset.id).subscribe((res) => {
+      this.onDatasetDeletionSucceed.emit(this.dataset.id);
+      this.dataset = null;
+      this.isDeleted = false;
+    });
   }
 }
 

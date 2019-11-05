@@ -14,7 +14,7 @@
                     aria-valuemax="100">
                     Uploading: {{uploadResponse.message}}%
                 </div>
-                Wait please for Analyzing the Data...
+                Wait please...Processing.
             </div>
             <button type="submit" class="btn btn-primary" (click)="onSubmit()">Upload</button>
         </div>
@@ -47,4 +47,7 @@
         </div>
     </div>
     <input type="button" class="btn btn-danger" value="Delete" (click)="deleteDataset()">
+    <div *ngIf="isDeleted">
+        Wait please...deleting.
+    </div>
 </div>

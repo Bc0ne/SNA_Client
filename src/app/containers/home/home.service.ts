@@ -21,8 +21,6 @@ export class HomeService {
   }
 
   uploadDataByDatasetId(id: any, formData: any) {
-    const headers = new HttpHeaders({ 'Content-Type': 'multipart/form-data' });
-
     return this.http.post<any>(environment.apiUrl + "datasets/" + id + "/data", formData, {
       reportProgress: true,
       observe: 'events'
@@ -52,6 +50,8 @@ export class HomeService {
 
   deleteDatasetById(id: any): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http.delete<any>(environment.apiUrl + "datasets/" + id, { headers: headers });
+    return this.http.delete<any>(environment.apiUrl + "datasets/" + id, {
+      headers: headers
+    });
   }
 }

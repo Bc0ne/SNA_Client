@@ -21,7 +21,7 @@
 <div class="content-container">
     <app-header></app-header>
   <div class="container-fluid">
-    <app-item-dataset [dataset]="selectedDataset" (onDatasetDeletionSucceed)="deleteDatasetFromSidebar()"></app-item-dataset>
+    <app-item-dataset [dataset]="selectedDataset" (onDatasetDeletionSucceed)="deleteDatasetFromSidebar($event)"></app-item-dataset>
     <app-dataset-input *ngIf="newDataset" (onDatasetCreationSucceed)="addItemToSidebar($event)"></app-dataset-input>
   </div>
   <app-footer></app-footer>
