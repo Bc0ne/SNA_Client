@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef, OnChanges } from '@angular/core';
 
 import { HomeService } from './home.service';
-import { Observable, Subject } from 'rxjs';
+import { Dataset } from './dataset.model';
 
 @Component({
   selector: 'app-home',
@@ -10,15 +10,20 @@ import { Observable, Subject } from 'rxjs';
 })
 export class HomeComponent implements OnInit {
 
-  datasets: any[] = [];
+  datasets: Dataset[] = [];
   selectedDataset: any;
   newDataset: boolean;
 
   constructor(private cdr: ChangeDetectorRef, private homeService: HomeService) { }
 
-
   ngOnInit() {
-    this.reloadSidebar();
+    this.getAllDatasets();
+  }
+
+  getAllDatasets() {
+    this.homeService.getAllDatasets().subscribe(res => {
+      this.datasets = res.data;
+    });
   }
 
   onSelect(dataset: any) {
@@ -29,13 +34,15 @@ export class HomeComponent implements OnInit {
   createDataset() {
     this.selectedDataset = null;
     this.newDataset = true;
-
   }
 
-  reloadSidebar() {
-    this.homeService.getAllDatasets().subscribe(res => {
-      this.datasets = res;
-    });
+  addItemToSidebar($event) {
+    this.datasets.push($event);
+    this.selectedDataset = $event;
+    this.newDataset = false;
   }
 
+  deleteDatasetFromSidebar() {
+    this.selectedDataset = null;
+  }
 }

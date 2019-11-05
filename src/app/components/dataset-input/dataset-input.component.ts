@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HomeService } from 'src/app/containers/home/home.service';
 import { DatasetModel } from './dataset.model';
+import { Dataset } from 'src/app/containers/home/dataset.model';
 
 @Component({
   selector: 'app-dataset-input',
@@ -12,7 +13,7 @@ export class DatasetInputComponent implements OnInit {
 
   datasetForm: FormGroup;
   datasetModel: DatasetModel = new DatasetModel();
-  @Output() onDatasetCreationSucceed = new EventEmitter();
+  @Output() onDatasetCreationSucceed = new EventEmitter<Dataset>();
 
   constructor(private fb: FormBuilder, private homeService: HomeService) { }
 
@@ -27,7 +28,7 @@ export class DatasetInputComponent implements OnInit {
       if (this.datasetForm.dirty) {
         const dataset = { ...this.datasetModel, ...this.datasetForm.value }
         this.homeService.saveDataset(dataset).subscribe(res => {
-          this.onDatasetCreationSucceed.emit(null);
+          this.onDatasetCreationSucceed.emit(res.data);
         })
       }
     }

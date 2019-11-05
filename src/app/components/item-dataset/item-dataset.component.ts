@@ -1,7 +1,9 @@
-import { Component, OnInit, Input, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectorRef, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 import { HomeService } from 'src/app/containers/home/home.service';
+import { User } from './user.model';
+import { Dataset } from 'src/app/containers/home/dataset.model';
 
 @Component({
   selector: 'app-item-dataset',
@@ -10,24 +12,34 @@ import { HomeService } from 'src/app/containers/home/home.service';
 })
 export class ItemDatasetComponent implements OnChanges {
 
-  data: any;
-  @Input() dataset: any;
+  @Input() dataset: Dataset;
+  @Output() onDatasetDeletionSucceed: EventEmitter<number>;
+  users: User[];
+  usersCount: number = 0;
+
   fileData: File = null;
   previewUrl: any = null;
   fileUploadProgress: string = null;
   uploadedFilePath: string = null;
-  users: any[];
-  usersCount: number = 0;
+  uploadResponse = { status: '', message: '' };
 
 
   constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef, private homeService: HomeService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.dataset.previousValue) {
-      this.getUsersCount();
+    if (changes.dataset.currentValue && changes.dataset.previousValue) {
+      this.getDatasetUsers();
     } else if (changes.dataset.currentValue) {
-      this.getUsersCount();
+      this.getDatasetUsers();
     }
+  }
+
+  getDatasetUsers() {
+    this.homeService.getUsersByDatasetId(this.dataset.id).subscribe(res => {
+      this.users = res.data.users;
+      this.usersCount = this.users.length;
+      this.dataset = res.data.dataset;
+    });
   }
 
   fileProgress(fileInput: any) {
@@ -53,16 +65,17 @@ export class ItemDatasetComponent implements OnChanges {
     const formData = new FormData();
     formData.append('file', this.fileData);
     this.homeService.uploadDataByDatasetId(this.dataset.id, formData)
-      .subscribe(res => {
-        this.dataset.isImported = true;
+      .subscribe((res) => {
+        this.uploadResponse = res;
+        this.getDatasetUsers();
       })
   }
 
-  getUsersCount() {
-    this.homeService.getUserCountByDatasetId(this.dataset.id).subscribe(res => {
-      this.users = res;
-      this.usersCount = this.users.length;
-    });
+  deleteDataset(){
+    // this.homeService.deleteDatasetById(this.dataset.id).subscribe((res) => {
+    //   this.onDatasetDeletionSucceed.emit(null);
+    //   this.dataset = null;
+    // });
   }
 }
 
