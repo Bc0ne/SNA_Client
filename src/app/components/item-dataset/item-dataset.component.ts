@@ -4,6 +4,9 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HomeService } from 'src/app/containers/home/home.service';
 import { User } from './user.model';
 import { Dataset } from 'src/app/containers/home/dataset.model';
+import { Friendship } from './friendship.model';
+import { Node } from '../dataset-graph/models/node.model';
+import { Link } from '../dataset-graph/models/link.model';
 
 @Component({
   selector: 'app-item-dataset',
@@ -14,16 +17,19 @@ export class ItemDatasetComponent implements OnChanges {
 
   @Input() dataset: Dataset;
   @Output() onDatasetDeletionSucceed: EventEmitter<number>;
-  users: User[];
+  users: User[] = [];
+  friendships: Friendship[] = [];
   usersCount: number = 0;
   isDeleted: boolean = false;
-
+  isLoading: boolean = false;
   fileData: File = null;
   previewUrl: any = null;
   fileUploadProgress: string = null;
   uploadedFilePath: string = null;
   uploadResponse = { status: '', message: '' };
-
+  nodes: Node[] = [];
+  links: Link[] = [];
+  loadGraph: boolean = false;
 
   constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef, private homeService: HomeService) {
     this.onDatasetDeletionSucceed = new EventEmitter<number>();
@@ -31,17 +37,38 @@ export class ItemDatasetComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.dataset.currentValue && changes.dataset.previousValue) {
+      this.nodes = [];
+      this.links = [];
+      this.isLoading = false;
       this.getDatasetUsers();
+      this.getDatasetFriendships();
     } else if (changes.dataset.currentValue) {
+      this.links = [];
+      this.nodes = [];
+      this.isLoading = false;
       this.getDatasetUsers();
+      this.getDatasetFriendships();
     }
   }
 
   getDatasetUsers() {
     this.homeService.getUsersByDatasetId(this.dataset.id).subscribe(res => {
+      res.data.users.forEach(x => {
+        this.nodes.push(new Node(x.userId))
+      });
       this.users = res.data.users;
       this.usersCount = this.users.length;
       this.dataset = res.data.dataset;
+    });
+  }
+
+  getDatasetFriendships() {
+    this.homeService.getFriendshipsByDatasetId(this.dataset.id).subscribe(res => {
+      res.data.forEach(x =>
+        this.links.push(new Link(x.personId1, x.personId2))
+      );
+      this.friendships = res.data;
+      this.isLoading = true;
     });
   }
 
@@ -81,6 +108,10 @@ export class ItemDatasetComponent implements OnChanges {
       this.dataset = null;
       this.isDeleted = false;
     });
+  }
+
+  changeGraphStatus(){
+    this.loadGraph = !this.loadGraph;
   }
 }
 
